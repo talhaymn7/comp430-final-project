@@ -3,13 +3,11 @@ CLAUDE.md
 .claude/
 details.md
 
-# ── Dataset (too large; download manually via README instructions) ────────────
-dataset/
-
-# ── Generated outputs ─────────────────────────────────────────────────────────
-results/
-experiment_photos/
-report_photos/
+# ── Generated outputs (tracked — uncomment to exclude) ───────────────────────
+# dataset/
+# results/
+# experiment_photos/
+# report_photos/
 
 # ── Course/internal documents ─────────────────────────────────────────────────
 external_resources/
