@@ -42,6 +42,8 @@ Average metrics over the full **Kodak24** benchmark (24 images, noise ratios 10 
 
 Peak IEF of **104.9** achieved at 30 % noise (vs. SMF: 16.3, Mean Filter: 5.9).
 
+Pre-generated CSVs and figures are included in the repository — see `results/` and `report_photos/`.
+
 ---
 
 ## Project Structure
@@ -49,41 +51,39 @@ Peak IEF of **104.9** achieved at 30 % noise (vs. SMF: 16.3, Mean Filter: 5.9).
 ```
 comp430-final-project/
 ├── src/
-│   ├── filters.py        # Mean Filter, SMF, DBRAMF implementations
-│   ├── metrics.py        # PSNR, SSIM, IEF
-│   ├── noise.py          # Salt & Pepper noise injection
-│   └── utils.py          # Image I/O and plotting helpers
+│   ├── filters.py              # Mean Filter, SMF, DBRAMF implementations
+│   ├── metrics.py              # PSNR, SSIM, IEF
+│   ├── noise.py                # Salt & Pepper noise injection
+│   └── utils.py                # Image I/O and plotting helpers
 ├── experiments/
-│   ├── run_experiments.py # Benchmark: all methods × all noise rates
-│   └── ablation.py        # Window-size ablation (Wmax = 3, 5, 7)
-├── run_all.py             # Master pipeline (noise → benchmark → ablation → figures)
-├── generate_figures.py    # IEEE-ready figure generation
-└── README.md
-```
-
-Output directories (auto-created, not tracked in git):
-
-```
-results/              ← benchmark_results.csv, ablation_results.csv
-experiment_photos/    ← 24 × 9 noisy images
-report_photos/        ← curves, comparisons, patches, tables, ablation, strips
+│   ├── run_experiments.py      # Benchmark: all methods × all noise rates
+│   └── ablation.py             # Window-size ablation (Wmax = 3, 5, 7)
+├── run_all.py                  # Master pipeline (noise → benchmark → ablation → figures)
+├── generate_figures.py         # IEEE-ready figure generation
+├── dataset/
+│   └── kodak24/                # 24 Kodak lossless PNG images (kodim01–kodim24)
+├── results/
+│   ├── benchmark_results.csv   # Per-image metrics for all methods × noise ratios
+│   ├── ablation_results.csv    # Per-image metrics for Wmax = 3, 5, 7
+│   └── report_figures/         # IEEE-format figures (300 DPI)
+├── experiment_photos/
+│   └── noise_XXpct/            # 216 noisy images (24 images × 9 noise levels)
+└── report_photos/
+    ├── curves/                 # PSNR / SSIM / IEF vs. noise ratio
+    ├── comparisons/            # Side-by-side visual comparisons with metrics
+    ├── patches/                # Zoomed detail crops (edge preservation)
+    ├── tables/                 # Summary tables as PNG and CSV
+    ├── ablation/               # Wmax ablation curves
+    └── strips/                 # DBRAMF output across all 9 noise levels
 ```
 
 ---
 
 ## Dataset
 
-This project uses the **Kodak24 Natural Image Dataset** — 24 lossless PNG images (768×512 px), the de-facto benchmark for image restoration research.
+This project uses the **Kodak24 Natural Image Dataset** — 24 lossless PNG images (768×512 px), the de-facto benchmark for image restoration research. All 24 images (`kodim01.png` … `kodim24.png`) are included in `dataset/kodak24/`.
 
-1. Download all 24 images (`kodim01.png` … `kodim24.png`) from:  
-   `http://r0k.us/graphics/kodak/`
-
-2. Place them in:
-   ```
-   dataset/kodak24/
-   ```
-
-The `dataset/` directory is excluded from version control due to file size.
+> Original source: `http://r0k.us/graphics/kodak/`
 
 ---
 
@@ -98,6 +98,8 @@ pip install numpy scipy scikit-image matplotlib pandas pillow tqdm
 ---
 
 ## Running Experiments
+
+Pre-generated results are already in the repository. To reproduce everything from scratch:
 
 ### Full pipeline (recommended)
 
