@@ -1,0 +1,41 @@
+# ── AI tool files (do not publish) ──────────────────────────────────────────
+CLAUDE.md
+.claude/
+details.md
+
+# ── Dataset (too large; download manually via README instructions) ────────────
+dataset/
+
+# ── Generated outputs ─────────────────────────────────────────────────────────
+results/
+experiment_photos/
+report_photos/
+
+# ── Course/internal documents ─────────────────────────────────────────────────
+external_resources/
+Report/
+
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+
+# ── Virtual environment ───────────────────────────────────────────────────────
+venv/
+.venv/
+env/
+ENV/
+
+# ── OS / editor ───────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*~
