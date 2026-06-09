@@ -1,8 +1,9 @@
 """
 Filters implemented:
-  - mean_filter       : uniform average (baseline)
+  - mean_filter            : uniform average (baseline)
   - standard_median_filter : fixed 3x3 median (baseline)
-  - dbramf            : Decision-Based Recursive Adaptive Median Filter (proposed)
+  - bdnd                   : Decision-based, expanding window, no recursive write-back (Ng & Ma 2006)
+  - dbramf                 : Decision-Based Recursive Adaptive Median Filter (proposed)
 """
 
 import numpy as np
@@ -37,6 +38,63 @@ def standard_median_filter(image: np.ndarray, kernel_size: int = 3) -> np.ndarra
     else:
         result = median_filter(image, size=kernel_size)
     return result.astype(np.uint8)
+
+
+# ---------------------------------------------------------------------------
+# BDND — Decision-Based, expanding window, NO recursive write-back
+# Reference: P. E. Ng & K.-K. Ma, IEEE Trans. Image Process., 2006
+# ---------------------------------------------------------------------------
+
+def _bdnd_channel(channel: np.ndarray, max_half: int) -> np.ndarray:
+    """
+    Single-pass decision-based filter (no causal write-back).
+    Noisy pixels (0 or 255) are replaced using valid neighbors from the
+    READ-ONLY input; earlier repairs are never visible to later pixels.
+    """
+    src = channel.astype(np.int32)
+    out = src.copy()
+    H, W = src.shape
+    flat = src.flatten()
+    valid_flat = flat[(flat != 0) & (flat != 255)]
+    fallback = float(np.mean(valid_flat)) if len(valid_flat) > 0 else 128.0
+
+    for r in range(H):
+        for c in range(W):
+            if src[r, c] != 0 and src[r, c] != 255:
+                continue
+            restored = False
+            for half in range(1, max_half + 1):
+                r0, r1 = max(0, r - half), min(H, r + half + 1)
+                c0, c1 = max(0, c - half), min(W, c + half + 1)
+                window = src[r0:r1, c0:c1].flatten()   # always reads original
+                valid = window[(window != 0) & (window != 255)]
+                if len(valid) > 0:
+                    out[r, c] = int(np.median(valid))
+                    restored = True
+                    break
+            if not restored:
+                out[r, c] = int(round(fallback))
+
+    return np.clip(out, 0, 255).astype(np.uint8)
+
+
+def bdnd(image: np.ndarray, max_window_size: int = 7) -> np.ndarray:
+    """
+    Boundary Discriminative Noise Detection filter (Ng & Ma, 2006).
+    Decision-based with expanding window; differs from DBRAMF only in
+    that repaired values are NOT written back to the working buffer.
+    """
+    if max_window_size not in (3, 5, 7):
+        raise ValueError("max_window_size must be 3, 5, or 7")
+    max_half = max_window_size // 2
+
+    if image.ndim == 3:
+        return np.stack(
+            [_bdnd_channel(image[:, :, c], max_half)
+             for c in range(image.shape[2])],
+            axis=2,
+        )
+    return _bdnd_channel(image, max_half)
 
 
 # ---------------------------------------------------------------------------

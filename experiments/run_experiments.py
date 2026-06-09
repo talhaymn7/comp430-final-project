@@ -15,7 +15,7 @@ from pathlib import Path
 from tqdm import tqdm
 
 from src.noise import add_salt_pepper_noise
-from src.filters import mean_filter, standard_median_filter, dbramf
+from src.filters import mean_filter, standard_median_filter, bdnd, dbramf
 from src.metrics import compute_all
 from src.utils import load_grayscale, list_kodak_images, plot_comparison, plot_metric_curves
 
@@ -29,6 +29,7 @@ SEED = 42
 METHODS = {
     "Mean Filter": lambda img: mean_filter(img, kernel_size=3),
     "SMF (3x3)":   lambda img: standard_median_filter(img, kernel_size=3),
+    "BDND":        lambda img: bdnd(img, max_window_size=7),
     "DBRAMF":      lambda img: dbramf(img, max_window_size=7),
 }
 # ─────────────────────────────────────────────────────────────────────────────
